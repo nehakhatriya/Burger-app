@@ -1,7 +1,8 @@
 import React, { Component, Fragment } from 'react'
 import Burger from '../../Burger/Burger'
 import BurgerControls from '../../Burger/BuildControls/BuildControls'
-
+import Modal from '../../Layout/UI/modal'
+import Ordersummary from '../../Burger/OrderSummary/OrderSumary'
 
 const INITIAL_PRICE={
     cheese: 1.3,
@@ -17,9 +18,25 @@ class BurgerBuilder extends Component {
             meat:0,
             salad:0
         },
-        totalPrice:4
+        totalPrice:4,
+        purchaseable:false,
+        showSummary:false
     }
+   updgradePurchase=(ingredients)=>{
+       const sum=Object.keys(ingredients)
+       .map((igkey)=>{
+           return ingredients[igkey]
+       })
+       .reduce((sum,el)=>{
+           return sum+el
+       },0)
+       this.setState({purchaseable:sum>0})
+       console.log(this.state.purchaseable)
+   }
 
+   updateOrderSummary=()=>{
+       this.setState({showSummary:!this.state.showSummary})
+   }
      addIngredientHandler=(type)=>{
              
         const oldCount=this.state.ingredients[type]
@@ -32,6 +49,7 @@ class BurgerBuilder extends Component {
         const newPrice=initialPrice+oldPrice
         
         this.setState({ingredients:updatedIngredients,totalPrice:newPrice})
+        this.updgradePurchase(updatedIngredients)
      }
 
      removeIngredientHandler=(type,key)=>{
@@ -46,6 +64,14 @@ class BurgerBuilder extends Component {
          const newPrice=oldPrice-initialPrice
          
          this.setState({ingredients:updatedIngredients,totalPrice:newPrice})
+         this.updgradePurchase(updatedIngredients)
+     }
+
+     purchaseCancel=()=>{ 
+         this.setState({ showSummary:false})
+     }
+     purchaseContinue=()=>{
+         alert("You continued")
      }
     render() {
         const disabledinfo={...this.state.ingredients}
@@ -55,10 +81,15 @@ class BurgerBuilder extends Component {
         }
         return (
             <Fragment>
+                <Modal modalClosed={this.purchaseCancel} show={this.state.showSummary}>
+                { (this.state.showSummary)?<Ordersummary price={this.state.totalPrice} continue={this.purchaseContinue} cancel={this.purchaseCancel}ingredients={this.state.ingredients}></Ordersummary>:''}
+                </Modal>
                 <Burger ingredients={this.state.ingredients}/>
                 <BurgerControls removeIng={this.removeIngredientHandler} 
                 addIng={this.addIngredientHandler}
                  disabled={disabledinfo}
+                 isPurchaseable={this.updgradePurchase}
+                 OrderNow={this.updateOrderSummary}
                  price={this.state.totalPrice}/>      
             </Fragment>
         )
