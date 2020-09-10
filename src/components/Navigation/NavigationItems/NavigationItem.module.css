@@ -21,6 +21,6 @@ box-sizing:border-box;
 .NavigationItem a.active{
     background-color:burlywood;
     color:white;
-    border-bottom:#40A4C8
+    border-bottom:#40A4C8;
 
 }
