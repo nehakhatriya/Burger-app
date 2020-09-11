@@ -1,9 +1,8 @@
-import { React } from "react";
+import  React, {Fragment } from "react";
 import classes from './spinner.module.css'
-const spinner=(props)=>{
-
+const spinner=(props)=> {
     return(
-        <div className={classes.loader}>Loading...</div>
+           <Fragment> <div className={classes.loader}>Loading...</div></Fragment>
     )
 }
 export default spinner;
