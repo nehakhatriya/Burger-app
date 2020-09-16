@@ -13,18 +13,17 @@ class BurgerBuilder extends Component {
     state={
         purchaseable:false,
         showSummary:false,
-         loading:false,
-         error:false
-    }
+         loading:false,}
 
-    // componentDidMount(){
+     componentDidMount(){
+        this.props.onInitIngredients()
     //     axios.get("/ingredients.json")
     //     .then(res=>{
     //         console.log(res.data)
     //         this.setState({ingredients:res.data})
     //     })
     //     .catch(err=>this.setState({error:true}))
-    // }
+    }
    updgradePurchase=(ingredients)=>{
        const sum=Object.keys(ingredients)
        .map((igkey)=>{
@@ -46,7 +45,7 @@ class BurgerBuilder extends Component {
          this.setState({ showSummary:false})
      }
      purchaseContinue=()=>{
-
+        this.props.onInitPurchase()
             this.props.history.push("/checkout" )
 
      }
@@ -56,7 +55,7 @@ class BurgerBuilder extends Component {
         {
             disabledinfo[key]=disabledinfo[key]<=0
         }
-        let burger=this.state.error?<p style={{textAlign:"center"}}>components cannot be uploaded</p>:<Spinner/>
+        let burger=this.props.err?<p style={{textAlign:"center"}}>components cannot be uploaded</p>:<Spinner/>
         if(this.props.ings){
             burger=(<Fragment>
             <Burger ingredients={this.props.ings}/> 
@@ -87,8 +86,10 @@ class BurgerBuilder extends Component {
 
 const mapStateToProps =state=>{
   return{
-      ings: state.ingredients,
-      price: state.totalPrice
+      ings: state.burgerBuilder.ingredients,
+      price: state.burgerBuilder.totalPrice,
+      err:state.burgerBuilder.error,
+
   }
 }
 
@@ -96,7 +97,9 @@ const mapActionToProps= dispatch =>{
 
  return {
      onAddingIngredient : (name)=> dispatch(actionCreater.addIngredient(name)),
-     onRemoveIngredient : (name)=> dispatch(actionCreater.removeIngredient(name))
- }
+     onRemoveIngredient : (name)=> dispatch(actionCreater.removeIngredient(name)),
+     onInitIngredients : ()=> dispatch(actionCreater.initIngredients()),
+    onInitPurchase:()=>dispatch(actionCreater.purchaseInit())
+    }
 }
 export default connect(mapStateToProps,mapActionToProps)(withExceptioHandling(BurgerBuilder,axios));

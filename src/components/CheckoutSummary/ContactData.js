@@ -5,7 +5,7 @@ import axios from 'axios'
 import Spinner from '../Layout/UI/spinner'
 import Input from '../Layout/UI/Input'
 import {connect} from 'react-redux'
-
+import * as actionCreater from '../../store/actions/combined-actions'
 class ContactData extends Component {
     state = {
         orderForm: {
@@ -42,12 +42,12 @@ class ContactData extends Component {
                     value:''
             }
         },
-        loading: false
+        // loading: false
     
 }
 orderhandler = (ev) => {
     ev.preventDefault();
-    this.setState({ loading: true })
+    // this.setState({ loading: true })
     const order = {
         ingredients: this.props.ings,
         price: this.props.price,
@@ -63,12 +63,13 @@ orderhandler = (ev) => {
         },
         deliverymethod: "fastest"
     }
-    axios.post("/orders.json", order)
-        .then(res => {
-            this.setState({ loading: false })
-            this.props.history.push('/')
-        })
-        .catch(error => this.setState({ loading: false }))
+    // axios.post("/orders.json", order)
+    //     .then(res => {
+    //         this.setState({ loading: false })
+    //         this.props.history.push('/')
+    //     })
+    //     .catch(error => this.setState({ loading: false }))
+   this.props.onOrderBurger(order)
 
 }
 
@@ -90,7 +91,7 @@ render() {
         })}
         <Button btnType="Success" click={this.orderhandler}>ORDER</Button>
     </form>);
-    if (this.state.loading) {
+    if (this.props.loading) {
         form = <Spinner />
     }
     return (
@@ -102,10 +103,19 @@ render() {
 }
 }
 
+
+
 const mapStateToProps=state=>{
     return {
-        ings: state.ingredients,
-        price: state.totalPrice
+        ings: state.burgerBuilder.ingredients,
+        price: state.burgerBuilder.totalPrice,
+        loading: state.order.loading
     }
 }
-export default connect(mapStateToProps)(ContactData)
+const mapActionToProps=dispatch=>{
+    return {
+        onOrderBurger:(orderData)=>dispatch(actionCreater.purchaseBurger(orderData))
+    }
+}
+export default connect(mapStateToProps,mapActionToProps)(ContactData)
+
